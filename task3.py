@@ -1,5 +1,6 @@
 import sys
 
+
 def parse_log_line(line: str) -> dict:
     # Функція для парсингу рядків логу
     lineData = {}
@@ -13,12 +14,7 @@ def parse_log_line(line: str) -> dict:
         if len(el) < 4:
             raise ValueError("Incomplete line")
 
-        lineData = {
-            "date": el[0],
-            "time": el[1],
-            "level": el[2],
-            "message": el[3]
-        }
+        lineData = {"date": el[0], "time": el[1], "level": el[2], "message": el[3]}
 
     except ValueError as e:
         print(f"Not enough data: ({e}): {line}")
@@ -27,24 +23,23 @@ def parse_log_line(line: str) -> dict:
 
 
 def load_logs(file_path: str) -> list:
-# Функція, яка читає і повертає з файлу інформацію про логи.
+    # Функція, яка читає і повертає з файлу інформацію про логи.
     try:
         with open(file_path, "r") as fh:
             lines = [el.strip() for el in fh.readlines() if el.strip()]
-          
+
             logsInfo = []
-        
+
             for line in lines:
                 try:
-                   parse_line = parse_log_line(line)
-                   logsInfo.append(parse_line)
-                  
+                    parse_line = parse_log_line(line)
+                    logsInfo.append(parse_line)
+
                 except ValueError:
                     print(f"{line} некоректні дані!")
                     continue
 
             return logsInfo
-               
 
     except FileNotFoundError:
         print(f"Файл '{file_path}' не знайдено.")
@@ -54,24 +49,22 @@ def load_logs(file_path: str) -> list:
         return []
 
 
-
-def filter_logs_by_level(logs: list, level: str  = None) -> list:
+def filter_logs_by_level(logs: list, level: str = None) -> list:
     # Функція, яка фільтрує за рівнем логування.
     if not level:
         return logs
-      
+
     spec_level = list(filter(lambda x: x.get("level").lower() == level.lower(), logs))
     return spec_level
 
 
-
 def count_logs_by_level(logs: list) -> dict:
-    #Функція, яка підраховує записи за рівнем логування
+    # Функція, яка підраховує записи за рівнем логування
     try:
         count_by_level = {}
 
         for i in range(len(logs)):
-            level = logs[i].get('level')
+            level = logs[i].get("level")
 
             if level in count_by_level:
                 count_by_level[level] += 1
@@ -85,19 +78,17 @@ def count_logs_by_level(logs: list) -> dict:
         return {}
 
 
-
 def display_log_counts(counts: dict) -> str:
-    #Форматує та повертає результати підрахунку логів у читабельній формі.
+    # Форматує та повертає результати підрахунку логів у читабельній формі.
     if not counts:
         return "Немає даних для відображення."
-    
-    COLOR_ERROR = "\033[95m"  
-    COLOR_RESET = "\033[0m"  
+
+    COLOR_ERROR = "\033[95m"
+    COLOR_RESET = "\033[0m"
 
     lines = []
     lines.append(f"{'Рівень логування':<20} | Кількість")
     lines.append(f"{'-'*20}-|----------")
-
 
     for level, count in counts.items():
         line = f"{level:<20} | {count}"
@@ -107,15 +98,15 @@ def display_log_counts(counts: dict) -> str:
 
         lines.append(line)
 
-
     result = "\n".join(lines)
     return result
 
 
-
 def main():
     if len(sys.argv) < 2:
-        print("Вкажіть шлях до директорії (наприклад: python task3.py чи python task3.py info)")
+        print(
+            "Вкажіть шлях до директорії (наприклад: python task3.py чи python task3.py info)"
+        )
         return
 
     file_path = sys.argv[1]
@@ -133,7 +124,7 @@ def main():
         for log in filtered:
             print(f"{log['date']} {log['time']} [{log['level']}] {log['message']}")
 
-        return 
+        return
 
     counts = count_logs_by_level(logs)
     print(display_log_counts(counts))
